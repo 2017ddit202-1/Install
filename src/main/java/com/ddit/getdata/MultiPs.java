@@ -5,7 +5,7 @@ import org.hyperic.sigar.MultiProcCpu;
 import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
-import org.hyperic.sigar.cmd.SigarCommandBase;
+
  
 /**
  * Show multi process status. 
