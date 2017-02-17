@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.ProcCredName;
 import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.ProcState;
@@ -16,10 +18,18 @@ import org.hyperic.sigar.SigarException;
 import org.hyperic.sigar.SigarProxy;
 import org.hyperic.sigar.cmd.Shell;
 import org.hyperic.sigar.cmd.SigarCommandBase;
-
-import com.ddit.getdata.Ps;
+import org.hyperic.sigar.shell.ShellCommandExecException;
+import org.hyperic.sigar.shell.ShellCommandUsageException;
 
 public class ProcessInfo extends SigarCommandBase{
+	
+	/*private static ProcessInfo instance = new ProcessInfo();
+
+	public static ProcessInfo getInstance () {
+		return instance;
+	}*/
+	
+	private static Sigar sigar = new Sigar();
 	
 	public ProcessInfo(Shell shell) { 
         super(shell); 
@@ -52,20 +62,19 @@ public class ProcessInfo extends SigarCommandBase{
         } 
         else { 
             pids = this.shell.findPids(args); 
-        } 
- 
+        }         
         for (int i=0; i<pids.length; i++) { 
             long pid = pids[i]; 
-            try { 
-                output(pid); 
-            } catch (SigarException e) { 
+            try {
+                output(pid);              
+            } catch (InterruptedException e) { 
                 this.err.println("Exception getting process info for " + 
                                  pid + ": " + e.getMessage()); 
             } 
         } 
     } 
  
-    public static String join(List info) { 
+    public static String join(List info) {
         StringBuffer buf = new StringBuffer(); 
         Iterator i = info.iterator(); 
         boolean hasNext = i.hasNext(); 
@@ -81,7 +90,7 @@ public class ProcessInfo extends SigarCommandBase{
  
     public static List getInfo(SigarProxy sigar, long pid) 
         throws SigarException { 
- 
+    	
         ProcState state = sigar.getProcState(pid); 
         ProcTime time = null; 
         String unknown = "???"; 
@@ -91,7 +100,8 @@ public class ProcessInfo extends SigarCommandBase{
  
         try { 
             ProcCredName cred = sigar.getProcCredName(pid); 
-            info.add(cred.getUser()); 
+            info.add(cred.getUser());           
+           
         } catch (SigarException e) { 
             //info.add(unknown); 
         } 
@@ -107,7 +117,23 @@ public class ProcessInfo extends SigarCommandBase{
             ProcMem mem = sigar.getProcMem(pid); 
             info.add(Sigar.formatSize(mem.getSize())); 
             info.add(Sigar.formatSize(mem.getRss())); 
-            info.add(Sigar.formatSize(mem.getShare())); 
+            info.add(Sigar.formatSize(mem.getShare()));
+            
+            ProcCpu procpu = sigar.getProcCpu(pid);
+            //double total = procpu.getTotal()*1000;
+            double total = procpu.getTotal()*1000;
+            Sigar s = new Sigar();
+            long maxcpu=1;
+            try {
+    			maxcpu = s.getCpu().getTotal();
+    		} catch (SigarException e) {
+    			e.printStackTrace();
+    		}
+            double pct = Math.round(total/maxcpu*100)/100d;
+            //System.out.println("total : " + pct);
+            String user = CpuPerc.format(pct);
+            /*System.out.println(user);*/
+
         } catch (SigarException e) { 
             //info.add(unknown); 
         } 
@@ -127,8 +153,10 @@ public class ProcessInfo extends SigarCommandBase{
         return info; 
     } 
  
-    public void output(long pid) throws SigarException { 
-        println(join(getInfo(this.proxy, pid))); 
+    public void output(long pid) throws SigarException, InterruptedException {
+   	
+        println(join(getInfo(this.proxy, pid)));
+
     } 
  
     public static String getCpuTime(long total) { 
@@ -143,7 +171,7 @@ public class ProcessInfo extends SigarCommandBase{
     private static String getStartTime(long time) { 
         if (time == 0) { 
             return "00:00"; 
-        } 
+        }
         long timeNow = System.currentTimeMillis(); 
         String fmt = "MMMd"; 
  
@@ -153,8 +181,21 @@ public class ProcessInfo extends SigarCommandBase{
  
         return new SimpleDateFormat(fmt).format(new Date(time)); 
     } 
- 
+    
+    public void ProcessThread(String[] args) throws SigarException, InterruptedException, ShellCommandUsageException, ShellCommandExecException {
+        while (true) {
+        	new ProcessInfo().processCommand(args);
+        		
+            Thread.sleep(3000);
+            
+        }
+
+    }
+   
     public static void main(String[] args) throws Exception { 
-        new Ps().processCommand(args); 
+        //new ProcessInfo().processCommand(args);
+    	new ProcessInfo().ProcessThread(args);
+    	
+    	
     } 
 }

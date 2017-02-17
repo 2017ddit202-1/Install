@@ -27,23 +27,35 @@ public class CpuInfo extends SigarCommandBase {
     } 
  
     private void output(CpuPerc cpu) { 
-        println("User Time....." + CpuPerc.format(cpu.getUser())); 
-        println("Sys Time......" + CpuPerc.format(cpu.getSys())); 
-        println("Idle Time....." + CpuPerc.format(cpu.getIdle())); 
-        if (SigarLoader.IS_LINUX) { 
-            println("SoftIrq Time.." + CpuPerc.format(cpu.getSoftIrq())); 
-            println("Stolen Time...." + CpuPerc.format(cpu.getStolen())); 
-        } 
-        println(""); 
+    	String user = CpuPerc.format(cpu.getUser());
+    	String Sys = CpuPerc.format(cpu.getSys());
+    	String Idle = CpuPerc.format(cpu.getIdle());
+    	
+    	String[] users = user.split("%");
+    	String[] Syss = Sys.split("%");
+    	String[] IdelS = Idle.split("%");
+
+    	user = users[0];
+    	Sys = Syss[0];
+    	Idle = IdelS[0];
+    	
+    /*	System.out.println(user);
+    	System.out.println(Sys);
+    	System.out.println(Idle);
+    	
+        println(""); */
+        
+       
     } 
- 
+    
+    
+    
     public void output(String[] args) throws SigarException { 
  
         if (!this.displayTimes) { 
             return; 
         } 
         
-        println("Totals........"); 
         output(this.sigar.getCpuPerc()); 
     } 
  

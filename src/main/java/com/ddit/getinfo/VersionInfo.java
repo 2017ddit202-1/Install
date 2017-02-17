@@ -11,12 +11,19 @@ import org.hyperic.sigar.SigarException;
 import org.hyperic.sigar.SigarLoader;
 import org.hyperic.sigar.cmd.Shell;
 import org.hyperic.sigar.cmd.SigarCommandBase;
-import org.hyperic.sigar.win32.LocaleInfo;
-
-import com.ddit.getdata.Version;
 
 public class VersionInfo extends SigarCommandBase {
-	
+	 static String OS_description;
+	 static String OS_name;
+	 static String OS_arch;
+     
+	 static String OS_version;
+	 static String OS_patch_level;
+	 static String OS_vandor;
+	 static String OS_vendor_version;
+	 
+	 static String host;
+     static String fqdn;
 	public VersionInfo(Shell shell) { 
         super(shell); 
     } 
@@ -38,23 +45,11 @@ public class VersionInfo extends SigarCommandBase {
     } 
  
     private static void printNativeInfo(PrintStream os) { 
-        String version = 
-            "java=" + Sigar.VERSION_STRING + 
-            ", native=" + Sigar.NATIVE_VERSION_STRING; 
-        String build = 
-            "java=" + Sigar.BUILD_DATE + 
-            ", native=" + Sigar.NATIVE_BUILD_DATE; 
-        String scm = 
-            "java=" + Sigar.SCM_REVISION + 
-            ", native=" + Sigar.NATIVE_SCM_REVISION; 
+ 
         String archlib = 
             SigarLoader.getNativeLibraryName(); 
  
-        os.println("Sigar version......." + version); 
-        os.println("Build date.........." + build); 
-        os.println("SCM rev............." + scm); 
-        String host = getHostName(); 
-        String fqdn; 
+        host = getHostName(); 
         Sigar sigar = new Sigar();  
         try { 
             File lib = sigar.getNativeLibrary(); 
@@ -67,20 +62,12 @@ public class VersionInfo extends SigarCommandBase {
         } finally { 
             sigar.close(); 
         } 
- 
-        os.println("Archlib............." + archlib); 
- 
+        
         os.println("Current fqdn........" + fqdn); 
         if (!fqdn.equals(host)) { 
             os.println("Hostname............" + host); 
         }         
  
-        if (SigarLoader.IS_WIN32) { 
-            LocaleInfo info = new LocaleInfo(); 
-            os.println("Language............" + info); 
-            os.println("Perflib lang id....." + 
-                       info.getPerflibLangId()); 
-        } 
     } 
      
     public static void printInfo(PrintStream os) { 
@@ -94,34 +81,32 @@ public class VersionInfo extends SigarCommandBase {
                    System.getProperty("user.name")); 
         os.println(""); 
          
-        OperatingSystem sys = OperatingSystem.getInstance(); 
+        OperatingSystem sys = OperatingSystem.getInstance();
+        OS_description = sys.getDescription();
+        OS_name = sys.getName();
+        OS_arch = sys.getArch();
+        
+        OS_version = sys.getVersion();
+        OS_patch_level = sys.getPatchLevel();
+        OS_vandor = sys.getVendor();
+        OS_vendor_version = sys.getVendorVersion();
+        
         os.println("OS description......" + sys.getDescription()); 
         os.println("OS name............." + sys.getName()); 
         os.println("OS arch............." + sys.getArch()); 
-        os.println("OS machine.........." + sys.getMachine()); 
+
         os.println("OS version.........." + sys.getVersion()); 
         os.println("OS patch level......" + sys.getPatchLevel()); 
         os.println("OS vendor..........." + sys.getVendor()); 
         os.println("OS vendor version..." + sys.getVendorVersion()); 
-        if (sys.getVendorCodeName() != null) { 
-            os.println("OS code name........" + sys.getVendorCodeName()); 
-        } 
-        os.println("OS data model......." + sys.getDataModel()); 
-        os.println("OS cpu endian......." + sys.getCpuEndian()); 
- 
-        os.println("Java vm version....." +  
-                   System.getProperty("java.vm.version")); 
-        os.println("Java vm vendor......" +  
-                System.getProperty("java.vm.vendor")); 
-        os.println("Java home..........." + 
-                System.getProperty("java.home")); 
+      
     } 
  
     public void output(String[] args) { 
-        printInfo(this.out); 
+        printInfo(this.out);
     } 
  
     public static void main(String[] args) throws Exception { 
-        new Version().processCommand(args); 
+        new VersionInfo().processCommand(args); 
     } 
 }

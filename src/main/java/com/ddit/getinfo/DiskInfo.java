@@ -1,6 +1,9 @@
 package com.ddit.getinfo;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.hyperic.sigar.FileSystem;
 import org.hyperic.sigar.FileSystemMap;
@@ -13,12 +16,13 @@ import org.hyperic.sigar.cmd.SigarCommandBase;
 import org.hyperic.sigar.shell.FileCompleter;
 import org.hyperic.sigar.util.GetlineCompleter;
 
-import com.ddit.getdata.Df;
-
 public class DiskInfo extends SigarCommandBase{
 	
+	Map<Integer, ArrayList<Object>> DiskInfo = new LinkedHashMap<Integer, ArrayList<Object>>();
+	int index = 1;
+	
 	private static final String OUTPUT_FORMAT = 
-	        "%-15s %4s %4s %5s %4s %-15s %s"; 
+	        "%-15s %4s %4s %5s %4s"; 
 	 
 	    //like df -h -a 
 	    private static final String[] HEADER = new String[] { 
@@ -26,20 +30,9 @@ public class DiskInfo extends SigarCommandBase{
 	        "Size", 
 	        "Used", 
 	        "Avail", 
-	        "Use%", 
-	        "Mounted on", 
-	        "Type" 
+	        "Use%" 
 	    }; 
 	    //df -i 
-	    private static final String[] IHEADER = new String[] { 
-	        "Filesystem", 
-	        "Inodes", 
-	        "IUsed", 
-	        "IFree", 
-	        "IUse%", 
-	        "Mounted on", 
-	        "Type" 
-	    }; 
 	 
 	    private GetlineCompleter completer; 
 	    private boolean opt_i; 
@@ -72,7 +65,7 @@ public class DiskInfo extends SigarCommandBase{
 	    } 
 	 
 	    public void printHeader() { 
-	        printf(this.opt_i ? IHEADER : HEADER); 
+	        printf(HEADER); 
 	    } 
 	 
 	    public void output(String[] args) throws SigarException { 
@@ -104,15 +97,16 @@ public class DiskInfo extends SigarCommandBase{
 	            } 
 	        } 
 	 
-	        printHeader(); 
+	       /* printHeader(); */
 	        for (int i=0; i<sys.size(); i++) { 
 	            output((FileSystem)sys.get(i)); 
 	        } 
+	       /* System.out.println(DiskInfo);*/
 	    } 
 	 
 	    public void output(FileSystem fs) throws SigarException { 
 	        long used, avail, total, pct; 
-	 
+	        
 	        try { 
 	            FileSystemUsage usage; 
 	            if (fs instanceof NfsFileSystem) { 
@@ -158,16 +152,18 @@ public class DiskInfo extends SigarCommandBase{
 	        } 
 	         
 	        ArrayList items = new ArrayList(); 
-	 
+	       
+	        if(total!=0){	        	
+	       
 	        items.add(fs.getDevName()); 
 	        items.add(formatSize(total)); 
 	        items.add(formatSize(used)); 
 	        items.add(formatSize(avail)); 
 	        items.add(usePct); 
-	        items.add(fs.getDirName()); 
-	        items.add(fs.getSysTypeName() + "/" + fs.getTypeName()); 
-	 
-	        printf(items); 
+	        
+	        DiskInfo.put(index++, items);
+	        /*printf(items); */
+	      }
 	    } 
 	 
 	    private String formatSize(long size) { 
@@ -175,7 +171,7 @@ public class DiskInfo extends SigarCommandBase{
 	    } 
 	 
 	    public static void main(String[] args) throws Exception { 
-	        new Df().processCommand(args); 
+	        new DiskInfo().processCommand(args); 
 	    } 
 	
 }

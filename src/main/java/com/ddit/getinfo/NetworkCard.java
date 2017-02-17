@@ -8,6 +8,6 @@ public class NetworkCard {
 	 public static void main(String args[]) throws SocketException {
 		 
 	        NetworkInterface nets = NetworkInterface.getByName("eth3");
-	        System.out.println(nets); 
+	       /* System.out.println(nets); */
 	    }
 }

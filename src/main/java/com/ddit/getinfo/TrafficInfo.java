@@ -12,8 +12,6 @@ import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
-import com.ddit.getdata.NetworkData;
-
 public class TrafficInfo {
 	
 	static Map<String, Long> rxCurrentMap = new HashMap<String, Long>();
@@ -30,22 +28,22 @@ public class TrafficInfo {
     public TrafficInfo(Sigar s) throws SigarException, InterruptedException {
         sigar = s;
         getMetric();
-        System.out.println(networkInfo());
-        Thread.sleep(1000);     
+       /* System.out.println(networkInfo());
+        Thread.sleep(1000);*/     
     }
 
     public static void main(String[] args) throws SigarException,
             InterruptedException {
-        new NetworkData(new Sigar());
-        NetworkData.newMetricThread();
+        new TrafficInfo(new Sigar());
+        TrafficInfo.newMetricThread();
     }
 
-    public static String networkInfo() throws SigarException {
+ /*   public static String networkInfo() throws SigarException {
         String info = sigar.getNetInfo().toString();
         info += "\n"+ sigar.getNetInterfaceConfig().toString();
         return info;
     }
-
+*/
     public static String getDefaultGateway() throws SigarException {
         return sigar.getNetInfo().getDefaultGateway();
     }
@@ -55,13 +53,17 @@ public class TrafficInfo {
             Long[] m = getMetric();
             long totalrx = m[0];
             long totaltx = m[1];
-            System.out.print("totalrx(download): ");
+            String rx = Sigar.formatSize(totalrx);
+            String tx = Sigar.formatSize(totaltx);
+            
+        /*    System.out.print("totalrx(download): ");
             System.out.println("\t" + Sigar.formatSize(totalrx));
             System.out.print("totaltx(upload): ");
             System.out.println("\t" + Sigar.formatSize(totaltx));
-            System.out.println("-----------------------------------");
+            System.out.println("-----------------------------------");*/
             Thread.sleep(1000);
-        }
+            
+       }
 
     }
 
