@@ -11,7 +11,12 @@ import org.hyperic.sigar.cmd.SigarCommandBase;
  * Display cpu information for each cpu found on the system. 
  */ 
 public class CpuInfo extends SigarCommandBase { 
- 
+	
+	String user;
+	String Sys;
+	String Idle;
+	String total;
+	
     public boolean displayTimes = true; 
      
     public CpuInfo(Shell shell) { 
@@ -27,19 +32,26 @@ public class CpuInfo extends SigarCommandBase {
     } 
  
     private void output(CpuPerc cpu) { 
-    	String user = CpuPerc.format(cpu.getUser());
-    	String Sys = CpuPerc.format(cpu.getSys());
-    	String Idle = CpuPerc.format(cpu.getIdle());
+    	user = CpuPerc.format(cpu.getUser());
+    	Sys = CpuPerc.format(cpu.getSys());
+    	Idle = CpuPerc.format(cpu.getIdle());
     	
     	String[] users = user.split("%");
     	String[] Syss = Sys.split("%");
     	String[] IdelS = Idle.split("%");
-
+    	
+    	
     	user = users[0];
     	Sys = Syss[0];
     	Idle = IdelS[0];
     	
-    /*	System.out.println(user);
+    	float convert =  Float.parseFloat(user) + Float.parseFloat(Sys);
+    	
+    	total = Math.round(convert*100)/100F +"";
+    	
+    	//System.out.println(total);
+    	
+    	/*System.out.println(user);
     	System.out.println(Sys);
     	System.out.println(Idle);
     	

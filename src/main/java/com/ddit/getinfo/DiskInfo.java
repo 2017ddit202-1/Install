@@ -20,7 +20,7 @@ public class DiskInfo extends SigarCommandBase{
 	
 	Map<Integer, ArrayList<Object>> DiskInfo = new LinkedHashMap<Integer, ArrayList<Object>>();
 	int index = 1;
-	
+	String disk="";
 	private static final String OUTPUT_FORMAT = 
 	        "%-15s %4s %4s %5s %4s"; 
 	 
@@ -99,9 +99,9 @@ public class DiskInfo extends SigarCommandBase{
 	 
 	       /* printHeader(); */
 	        for (int i=0; i<sys.size(); i++) { 
-	            output((FileSystem)sys.get(i)); 
+	            output((FileSystem)sys.get(i));
 	        } 
-	       /* System.out.println(DiskInfo);*/
+	      /* System.out.println(DiskInfo);*/
 	    } 
 	 
 	    public void output(FileSystem fs) throws SigarException { 
@@ -151,19 +151,38 @@ public class DiskInfo extends SigarCommandBase{
 	            usePct = pct + "%"; 
 	        } 
 	         
-	        ArrayList items = new ArrayList(); 
-	       
 	        if(total!=0){	        	
-	       
+	        ArrayList items = new ArrayList();
+	        
+	        String dtotal = formatSize(total);
+	        dtotal = dtotal.replace("G","");
+	        dtotal = dtotal.replace("M","");
+	        dtotal = dtotal.replace("B","");
+	        
+	        String dused = formatSize(used);
+	        dused = dused.replace("G","");
+	        dused = dused.replace("M","");
+	        dused = dused.replace("B","");
+	    	        
+	        String davail =formatSize(avail);
+	        davail = davail.replace("G","");
+	        davail = davail.replace("M","");
+	        davail = davail.replace("B","");
+	        
+	        String dusePct = usePct.replace("%","");
+	        
 	        items.add(fs.getDevName()); 
-	        items.add(formatSize(total)); 
-	        items.add(formatSize(used)); 
-	        items.add(formatSize(avail)); 
-	        items.add(usePct); 
+	        items.add(dtotal); 
+	        items.add(dused); 
+	        items.add(davail); 
+	        items.add(dusePct); 
 	        
 	        DiskInfo.put(index++, items);
-	        /*printf(items); */
+	        disk += items.toString();
+	     /*   System.out.println(disk);*/
+	        //printf(items); 
 	      }
+	       
 	    } 
 	 
 	    private String formatSize(long size) { 
@@ -171,7 +190,8 @@ public class DiskInfo extends SigarCommandBase{
 	    } 
 	 
 	    public static void main(String[] args) throws Exception { 
-	        new DiskInfo().processCommand(args); 
+	        new DiskInfo().processCommand(args);
+	       
 	    } 
 	
 }

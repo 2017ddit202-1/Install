@@ -56,11 +56,11 @@ public class TrafficInfo {
             String rx = Sigar.formatSize(totalrx);
             String tx = Sigar.formatSize(totaltx);
             
-        /*    System.out.print("totalrx(download): ");
+            System.out.print("totalrx(download): ");
             System.out.println("\t" + Sigar.formatSize(totalrx));
             System.out.print("totaltx(upload): ");
             System.out.println("\t" + Sigar.formatSize(totaltx));
-            System.out.println("-----------------------------------");*/
+            System.out.println("-----------------------------------");
             Thread.sleep(1000);
             
        }

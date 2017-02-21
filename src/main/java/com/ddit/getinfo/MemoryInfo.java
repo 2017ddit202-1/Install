@@ -9,6 +9,11 @@ import org.hyperic.sigar.cmd.SigarCommandBase;
 
 public class MemoryInfo extends SigarCommandBase {
 	
+	String RAM;
+	String Total;
+	String Used;
+	String idle;
+	
     public MemoryInfo(Shell shell) { 
         super(); 
     } 
@@ -34,16 +39,25 @@ public class MemoryInfo extends SigarCommandBase {
         
         double uRam = mem.getUsed()/1000000000d;
         float usedRam = Math.round(uRam*100)/100F;   
-               
+        
+        double iRam = mem.getFree()/1000000000d; 
+        float idleRam =  Math.round(iRam*100)/100F;
+        
         float u100 = mem.getUsed() * 100; 
         float pct = u100 / mem.getTotal() + 
             ((u100 % mem.getTotal() != 0) ? 1 : 0);
         
         float memusedpct = Math.round(pct*100)/100F;
         
+        RAM = memusedpct+"";
+        Total = totalRam+"";
+        Used = usedRam+"";
+        idle = idleRam+"";
+        	
        /* System.out.println("RAM "+memusedpct + "%");
         System.out.println("Total "+totalRam + "Gbyte");
-        System.out.println("Used "+usedRam + "Gbyte");*/
+        System.out.println("Used "+usedRam + "Gbyte");
+        System.out.println("idle "+idleRam + "Gbyte");*/
     } 
  
     public static void main(String[] args) throws Exception { 

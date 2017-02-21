@@ -63,9 +63,9 @@ public class VersionInfo extends SigarCommandBase {
             sigar.close(); 
         } 
         
-        os.println("Current fqdn........" + fqdn); 
+      /*  os.println("Current fqdn........" + fqdn); */
         if (!fqdn.equals(host)) { 
-            os.println("Hostname............" + host); 
+           /* os.println("Hostname............" + host); */
         }         
  
     } 
@@ -76,10 +76,6 @@ public class VersionInfo extends SigarCommandBase {
         } catch (UnsatisfiedLinkError e) { 
             os.println("*******ERROR******* " + e); 
         } 
- 
-        os.println("Current user........" + 
-                   System.getProperty("user.name")); 
-        os.println(""); 
          
         OperatingSystem sys = OperatingSystem.getInstance();
         OS_description = sys.getDescription();
@@ -91,14 +87,10 @@ public class VersionInfo extends SigarCommandBase {
         OS_vandor = sys.getVendor();
         OS_vendor_version = sys.getVendorVersion();
         
-        os.println("OS description......" + sys.getDescription()); 
+       /* os.println("OS description......" + sys.getDescription()); 
         os.println("OS name............." + sys.getName()); 
-        os.println("OS arch............." + sys.getArch()); 
+        os.println("OS arch............." + sys.getArch()); */
 
-        os.println("OS version.........." + sys.getVersion()); 
-        os.println("OS patch level......" + sys.getPatchLevel()); 
-        os.println("OS vendor..........." + sys.getVendor()); 
-        os.println("OS vendor version..." + sys.getVendorVersion()); 
       
     } 
  
