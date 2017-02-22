@@ -39,10 +39,14 @@ public class GetinfoSend {
 	static String networktx; // 네트워크 송신
 
 	static String[] arg;
-	
+
 	static TrafficInfo traffic;
 	static SystemTray tray = SystemTray.getSystemTray();
 	static TrayIcon trayIcon;
+	
+	static InstallThread install;
+	static InstallWatchThread installwatch;
+
 	public static void main(String[] args) throws Exception {
 		arg = args;
 		NetworkInterface nets = NetworkInterface.getByName("eth3");
@@ -60,48 +64,69 @@ public class GetinfoSend {
 		
 		traffic = new TrafficInfo(new Sigar());
 		
-		
-		if(SystemTray.isSupported()){
-			
-			Image image = Toolkit.getDefaultToolkit().getImage("C:/Program Files/install/icon.png");
+		if (SystemTray.isSupported()) {
+
+			Image image = Toolkit.getDefaultToolkit().getImage(
+					"C:/Program Files (x86)/install/icon.png");
 			PopupMenu popup = new PopupMenu();
-			trayIcon = new TrayIcon(image,"Install",popup);
+			trayIcon = new TrayIcon(image, "Install", popup);
 			trayIcon.setImageAutoSize(true);
+			
+			
 			
 			MenuItem item = new MenuItem("start");
 			item.addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					
-					InstallThread install = new InstallThread(arg, traffic,networkcard,ip,hostname,os_version,os_name,os_support);
+
+					install = new InstallThread(arg, traffic,
+							networkcard, ip, hostname, os_version, os_name,
+							os_support);
 					install.setDaemon(false);
+					installwatch = new InstallWatchThread(
+							arg, traffic, networkcard, ip, hostname,
+							os_version, os_name, os_support);
+					installwatch.setDaemon(false);
 					install.start();
+					installwatch.start();
+				}
+			});
+			popup.add(item);
+			item = new MenuItem("stop");
+			item.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					install.Stop();
+					installwatch.Stop();
 				}
 			});
 			
+
 			popup.add(item);
 			item = new MenuItem("close");
 			item.addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					tray.remove(trayIcon);
 					System.exit(0);
 				}
 			});
-				popup.add(item);
+			popup.add(item);
+
 			
-			try{
+
+			try {
 				tray.add(trayIcon);
-			}catch(AWTException e){
+			} catch (AWTException e) {
 				System.err.println("Can not add to tray");
 			}
-		}else{
+		} else {
 			System.err.println("Tray unavailable");
 		}
-					
-		
+
 	}
 
 }

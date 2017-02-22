@@ -2,8 +2,6 @@ package com.ddit.getinfo;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -50,6 +48,8 @@ public class InstallThread extends Thread {
 	static String[] arg;
 	static TrafficInfo traffic;
 	
+	private boolean stopped = false;
+	
 	public InstallThread(String[] arg, TrafficInfo traffic,String networkcard,String ip,String hostname,String os_version,String os_name,String os_support){
 		this.arg = arg;
 		this.traffic = traffic;
@@ -59,11 +59,15 @@ public class InstallThread extends Thread {
 		this.os_version = os_version;
 		this.os_name = os_name;
 		this.os_support = os_support;
+		this.stopped =false;
 	}
 	
+	 public void Stop(){
+		stopped = true;
+	 }
+	
 	 public void run() {
-		 while(true){
-			 
+		 while(!stopped){
 	         CpuInfo cpu = new CpuInfo();
 	         DiskInfo disk = new DiskInfo();
 	         MemoryInfo memory = new MemoryInfo();
@@ -156,10 +160,10 @@ public class InstallThread extends Thread {
 
 	            if (respEntity != null) {
 	               String content = EntityUtils.toString(respEntity);
-	               System.out.println(content);
+	               //System.out.println(content);
 	            }
 	            
-	            System.out.println(ip);
+	           /* System.out.println(ip);
 	            System.out.println(hostname);
 	            System.out.println(os_name);
 	            System.out.println(os_support);
@@ -175,7 +179,7 @@ public class InstallThread extends Thread {
 	            System.out.println(memory_used);
 	            System.out.println(diskAll);
 	            System.out.println(networkrx);
-	            System.out.println(networktx);
+	            System.out.println(networktx);*/
 
 	     	            
 	            
@@ -202,5 +206,7 @@ public class InstallThread extends Thread {
 		 }
 		 
 	    }
+	
+	
 	 
 }
