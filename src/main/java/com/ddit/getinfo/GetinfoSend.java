@@ -174,15 +174,24 @@ public class GetinfoSend {
 				nameValuePairs
 						.add(new BasicNameValuePair("hostName", hostname));
 				nameValuePairs.add(new BasicNameValuePair("saveyn", saveyn));
+				nameValuePairs.add(new BasicNameValuePair("os_version", os_version));
+				nameValuePairs.add(new BasicNameValuePair("os_name", os_name));
+				nameValuePairs.add(new BasicNameValuePair("os_support", os_support));
+				
 				nameValuePairs.add(new BasicNameValuePair("cpu_pcnt", cpu_sys));
-				nameValuePairs.add(new BasicNameValuePair("cpu_user_pcnt",
-						cpu_user));
-				nameValuePairs.add(new BasicNameValuePair("cpu_total_pcnt",
-						cpu_total));
-				nameValuePairs
-						.add(new BasicNameValuePair("cpu_idle", cpu_idle));
+				nameValuePairs.add(new BasicNameValuePair("cpu_user_pcnt",	cpu_user));
+				nameValuePairs.add(new BasicNameValuePair("cpu_total_pcnt",	cpu_total));
+				nameValuePairs.add(new BasicNameValuePair("cpu_idle", cpu_idle));
 				nameValuePairs.add(new BasicNameValuePair("cpu_ip", ip));
-
+				
+				nameValuePairs.add(new BasicNameValuePair("memory_total", memory_max));
+				nameValuePairs.add(new BasicNameValuePair("memory_using", memory_used));
+				nameValuePairs.add(new BasicNameValuePair("memory_total", memory_max));
+				nameValuePairs.add(new BasicNameValuePair("memory_idle", memory_idle));
+				nameValuePairs.add(new BasicNameValuePair("memory_total_used", memory_idle));
+				
+				
+				
 				httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,
 						"utf-8"));
 
