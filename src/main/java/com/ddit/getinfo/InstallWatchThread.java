@@ -125,15 +125,15 @@ public class InstallWatchThread extends Thread {
 					 */
 					if (Double.parseDouble(cpu.total) > 80) {
 						url = new URI(
-								"http://192.168.202.139:8181/observer/server/serverMain?testIp="
-										+ ip + "&alertcpu=" + cpu_total);
+								"http://192.168.202.199:8181/observer/server/serverMain?testIp="
+										+ ip + "&alertcpu=true");
 					} else if (Double.parseDouble(memory.Used) > 80) {
 						url = new URI(
-								"http://192.168.202.139:8181/observer/server/serverMain?testIp="
-										+ ip + "&alertmemory=" + memory_used);
+								"http://192.168.202.199:8181/observer/server/serverMain?testIp="
+										+ ip + "&alertmemory=true");
 					}else{
 						url = new URI(
-								"http://192.168.202.139:8181/observer/server/serverMain?testIp="
+								"http://192.168.202.199:8181/observer/server/serverMain?testIp="
 										+ ip);
 					}
 					HttpClient httpclient = new DefaultHttpClient();

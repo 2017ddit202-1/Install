@@ -141,7 +141,7 @@ public class InstallThread extends Thread {
 	            nameValuePairs.add(new BasicNameValuePair("memory_total", memory_max));
 	            nameValuePairs.add(new BasicNameValuePair("memory_using", memory_used));
 	            nameValuePairs.add(new BasicNameValuePair("memory_idle", memory_idle));
-	            nameValuePairs.add(new BasicNameValuePair("memory_total_used", memory_idle));
+	            nameValuePairs.add(new BasicNameValuePair("memory_total_used", memory_total));
 	            
 	            nameValuePairs.add(new BasicNameValuePair("networkcard", networkcard));
 	            
