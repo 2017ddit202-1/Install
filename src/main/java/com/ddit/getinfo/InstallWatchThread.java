@@ -21,216 +21,244 @@ import org.hyperic.sigar.shell.ShellCommandExecException;
 import org.hyperic.sigar.shell.ShellCommandUsageException;
 
 public class InstallWatchThread extends Thread {
-	static String ip; // 아이피
-	static String hostname;// 호스트 네임
-	static String os_version;// win32
-	static String os_name; // windows7
-	static String os_support; // 32,64
+   static String ip; // 아이피
+   static String hostname;// 호스트 네임
+   static String os_version;// win32
+   static String os_name; // windows7
+   static String os_support; // 32,64
 
-	static String networkcard; // 네트워크 카드
+   static String networkcard; // 네트워크 카드
 
-	static String cpu_user; // cpu 유저 사용량
-	static String cpu_sys; // cpu 시스템 사용량
-	static String cpu_idle; // cpu 휴먼 사용량
-	static String cpu_total; // cpu 총 사용량
+   static String cpu_user; // cpu 유저 사용량
+   static String cpu_sys; // cpu 시스템 사용량
+   static String cpu_idle; // cpu 휴먼 사용량
+   static String cpu_total; // cpu 총 사용량
 
-	static String memory_max; // 최대 메모리
-	static String memory_used; // 현재 메모리 사용량
-	static String memory_idle; // 휴먼 메모리
-	static String memory_total; // 총 메모리 사용량(%)
+   static String memory_max; // 최대 메모리
+   static String memory_used; // 현재 메모리 사용량
+   static String memory_idle; // 휴먼 메모리
+   static String memory_total; // 총 메모리 사용량(%)
 
-	static String diskAll; // 디스크 사용량
+   static String diskAll; // 디스크 사용량
 
-	static String networkrx; // 네트워크 수신
-	static String networktx; // 네트워크 송신
+   static String networkrx; // 네트워크 수신
+   static String networktx; // 네트워크 송신
 
-	static String[] arg;
-	static TrafficInfo traffic;
+   static String[] arg;
+   static TrafficInfo traffic;
 
-	private boolean stopped = false;
+   private boolean stopped = false;
 
-	public InstallWatchThread(String[] arg, TrafficInfo traffic,
-			String networkcard, String ip, String hostname, String os_version,
-			String os_name, String os_support) {
-		this.arg = arg;
-		this.traffic = traffic;
-		this.networkcard = networkcard;
-		this.ip = ip;
-		this.hostname = hostname;
-		this.os_version = os_version;
-		this.os_name = os_name;
-		this.os_support = os_support;
-		this.stopped = false;
-	}
+   public InstallWatchThread(String[] arg, TrafficInfo traffic,
+         String networkcard, String ip, String hostname, String os_version,
+         String os_name, String os_support) {
+      this.arg = arg;
+      this.traffic = traffic;
+      this.networkcard = networkcard;
+      this.ip = ip;
+      this.hostname = hostname;
+      this.os_version = os_version;
+      this.os_name = os_name;
+      this.os_support = os_support;
+      this.stopped = false;
+   }
 
-	public void Stop() {
-		stopped = true;
-	}
+   public void Stop() {
+      stopped = true;
+   }
 
-	public void run() {
-		while (!stopped) {
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			CpuInfo cpu = new CpuInfo();
-			DiskInfo disk = new DiskInfo();
-			MemoryInfo memory = new MemoryInfo();
-			Long[] m = null;
+   public void run() {
+      while (!stopped) {
+         try {
+            Thread.sleep(2000);
+         } catch (InterruptedException e1) {
+            e1.printStackTrace();
+         }
+         CpuInfo cpu = new CpuInfo();
+         DiskInfo disk = new DiskInfo();
+         MemoryInfo memory = new MemoryInfo();
+         Long[] m = null;
 
-			try {
-				cpu.processCommand(arg);
-				disk.processCommand(arg);
-				memory.processCommand(arg);
-				m = traffic.getMetric();
+         try {
+            cpu.processCommand(arg);
+            disk.processCommand(arg);
+            memory.processCommand(arg);
+            m = traffic.getMetric();
 
-			} catch (ShellCommandUsageException e) {
+         } catch (ShellCommandUsageException e) {
 
-			} catch (ShellCommandExecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SigarException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+         } catch (ShellCommandExecException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         } catch (SigarException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
 
-			long totalrx = m[0];
-			long totaltx = m[1];
-			String rx = Sigar.formatSize(totalrx);
-			String tx = Sigar.formatSize(totaltx);
-			networkrx = rx;
-			networktx = tx;
+         long totalrx = m[0];
+         long totaltx = m[1];
+         String rx = Sigar.formatSize(totalrx);
+         String tx = Sigar.formatSize(totaltx);
+         networkrx = rx;
+         networktx = tx;
 
-			diskAll = disk.disk;
+         diskAll = disk.disk;
 
-			cpu_user = cpu.user;
-			cpu_sys = cpu.Sys;
-			cpu_idle = cpu.Idle;
-			cpu_total = cpu.total;
+         cpu_user = cpu.user;
+         cpu_sys = cpu.Sys;
+         cpu_idle = cpu.Idle;
+         cpu_total = cpu.total;
 
-			memory_max = memory.Total;
-			memory_used = memory.Used;
-			memory_idle = memory.idle;
-			memory_total = memory.RAM;
+         memory_max = memory.Total;
+         memory_used = memory.Used;
+         memory_idle = memory.idle;
+         memory_total = memory.RAM;
 
-			if (Double.parseDouble(cpu.total) > 80
-					|| Double.parseDouble(memory.Used) > 80) {
-				URI url;
-				try {
-					/*
-					 * ip = InetAddress.getLocalHost().getHostAddress();
-					 * hostName = InetAddress.getLocalHost().getHostName();
-					 * System.out.println(ip);
-					 */
-					if (Double.parseDouble(cpu.total) > 80) {
-						url = new URI(
-								"http://192.168.202.143:8181/observer/server/serverMain?testIp="
-										+ ip + "&alertcpu=" + cpu_total);
-					} else if (Double.parseDouble(memory.Used) > 80) {
-						url = new URI(
-								"http://192.168.202.143:8181/observer/server/serverMain?testIp="
-										+ ip + "&alertmemory=" + memory_used);
-					}else{
-						url = new URI(
-								"http://192.168.202.143:8181/observer/server/serverMain?testIp="
-										+ ip);
-					}
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost httpPost = new HttpPost(url);
-					ArrayList<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
+         if (Double.parseDouble(cpu.total) > 80
+               || Double.parseDouble(memory.Used) > 80) {
+            URI url;
+            try {
+               /*
+                * ip = InetAddress.getLocalHost().getHostAddress();
+                * hostName = InetAddress.getLocalHost().getHostName();
+                * System.out.println(ip);
+                */
+               if (Double.parseDouble(cpu.total) > 80) {
+                  url = new URI(
+                        "http://192.168.202.199:8181/observer/server/serverMain?testIp="
+                              + ip + "&alertcpu=true");
+               } else if (Double.parseDouble(memory.Used) > 80) {
+                  url = new URI(
+                        "http://192.168.202.199:8181/observer/server/serverMain?testIp="
+                              + ip + "&alertmemory=true");
+               }else{
+                  url = new URI(
+                        "http://192.168.202.199:8181/observer/server/serverMain?testIp="
+                              + ip);
+               }
+               HttpClient httpclient = new DefaultHttpClient();
+               HttpPost httpPost = new HttpPost(url);
+               ArrayList<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
 
-					String saveyn = "0";
-					nameValuePairs.add(new BasicNameValuePair("ip", ip));
-					nameValuePairs.add(new BasicNameValuePair("hostName",
-							hostname));
-					nameValuePairs
-							.add(new BasicNameValuePair("saveyn", saveyn));
-					nameValuePairs.add(new BasicNameValuePair("os_version",
-							os_version));
-					nameValuePairs.add(new BasicNameValuePair("os_name",
-							os_name));
-					nameValuePairs.add(new BasicNameValuePair("os_support",
-							os_support));
+               String saveyn = "0";
+               nameValuePairs.add(new BasicNameValuePair("ip", ip));
+               nameValuePairs.add(new BasicNameValuePair("hostName",
+                     hostname));
+               nameValuePairs
+                     .add(new BasicNameValuePair("saveyn", saveyn));
+               nameValuePairs.add(new BasicNameValuePair("os_version",
+                     os_version));
+               nameValuePairs.add(new BasicNameValuePair("os_name",
+                     os_name));
+               nameValuePairs.add(new BasicNameValuePair("os_support",
+                     os_support));
 
-					nameValuePairs.add(new BasicNameValuePair("cpu_pcnt",
-							cpu_sys));
-					nameValuePairs.add(new BasicNameValuePair("cpu_user_pcnt",
-							cpu_user));
-					nameValuePairs.add(new BasicNameValuePair("cpu_total_pcnt",
-							cpu_total));
-					nameValuePairs.add(new BasicNameValuePair("cpu_idle",
-							cpu_idle));
-					nameValuePairs.add(new BasicNameValuePair("cpu_ip", ip));
+               nameValuePairs.add(new BasicNameValuePair("cpu_pcnt",
+                     cpu_sys));
+               nameValuePairs.add(new BasicNameValuePair("cpu_user_pcnt",
+                     cpu_user));
+               nameValuePairs.add(new BasicNameValuePair("cpu_total_pcnt",
+                     cpu_total));
+               nameValuePairs.add(new BasicNameValuePair("cpu_idle",
+                     cpu_idle));
+               nameValuePairs.add(new BasicNameValuePair("cpu_ip", ip));
 
-					nameValuePairs.add(new BasicNameValuePair("memory_total",
-							memory_max));
-					nameValuePairs.add(new BasicNameValuePair("memory_using",
-							memory_used));
-					nameValuePairs.add(new BasicNameValuePair("memory_idle",
-							memory_idle));
-					nameValuePairs.add(new BasicNameValuePair(
-							"memory_total_used", memory_idle));
+               nameValuePairs.add(new BasicNameValuePair("memory_total",
+                     memory_max));
+               nameValuePairs.add(new BasicNameValuePair("memory_using",
+                     memory_used));
+               nameValuePairs.add(new BasicNameValuePair("memory_idle",
+                     memory_idle));
+               nameValuePairs.add(new BasicNameValuePair(
+                     "memory_total_used", memory_idle));
 
-					nameValuePairs.add(new BasicNameValuePair("networkcard",
-							networkcard));
+               nameValuePairs.add(new BasicNameValuePair("networkcard",
+                     networkcard));
 
-					nameValuePairs.add(new BasicNameValuePair("diskAll",
-							diskAll));
+               nameValuePairs.add(new BasicNameValuePair("diskAll",
+                     diskAll));
 
-					nameValuePairs.add(new BasicNameValuePair("networkrx",
-							networkrx));
-					nameValuePairs.add(new BasicNameValuePair("networktx",
-							networktx));
+               nameValuePairs.add(new BasicNameValuePair("networkrx",
+                     networkrx));
+               nameValuePairs.add(new BasicNameValuePair("networktx",
+                     networktx));
 
-					httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,
-							"utf-8"));
+               httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,
+                     "utf-8"));
+               
+               if (Double.parseDouble(cpu.total) > 80) {
+                  HttpResponse response = httpclient.execute(httpPost);
+                  HttpEntity respEntity = response.getEntity();
+                  try {
+                     Thread.sleep(10000);
+                  } catch (InterruptedException e) {
+                     e.printStackTrace();
+                  }
+                  if (respEntity != null) {
+                     String content = EntityUtils.toString(respEntity);
+                     // System.out.println(content);
+                  }
+               } else if (Double.parseDouble(memory.Used) > 80) {
+                  HttpResponse response = httpclient.execute(httpPost);
+                  HttpEntity respEntity = response.getEntity();
+                  try {
+                     Thread.sleep(10000);
+                  } catch (InterruptedException e) {
+                     e.printStackTrace();
+                  }
+                  if (respEntity != null) {
+                     String content = EntityUtils.toString(respEntity);
+                     // System.out.println(content);
+                  }
+               }else{
+                  HttpResponse response = httpclient.execute(httpPost);
+                  HttpEntity respEntity = response.getEntity();
 
-					HttpResponse response = httpclient.execute(httpPost);
-					HttpEntity respEntity = response.getEntity();
+                  if (respEntity != null) {
+                     String content = EntityUtils.toString(respEntity);
+                     // System.out.println(content);
+                  }
 
-					if (respEntity != null) {
-						String content = EntityUtils.toString(respEntity);
-						// System.out.println(content);
-					}
+               }
 
-					/*
-					 * System.out.println(ip); System.out.println(hostname);
-					 * System.out.println(os_name);
-					 * System.out.println(os_support);
-					 * System.out.println(os_version);
-					 * System.out.println(networkcard);
-					 * System.out.println(cpu_idle);
-					 * System.out.println(cpu_sys);
-					 * System.out.println(cpu_total);
-					 * System.out.println(cpu_user);
-					 * System.out.println(memory_idle);
-					 * System.out.println(memory_max);
-					 * System.out.println(memory_total);
-					 * System.out.println(memory_used);
-					 * System.out.println(diskAll);
-					 * System.out.println(networkrx);
-					 * System.out.println(networktx);
-					 */
 
-				} catch (URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClientProtocolException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+               /*
+                * System.out.println(ip); System.out.println(hostname);
+                * System.out.println(os_name);
+                * System.out.println(os_support);
+                * System.out.println(os_version);
+                * System.out.println(networkcard);
+                * System.out.println(cpu_idle);
+                * System.out.println(cpu_sys);
+                * System.out.println(cpu_total);
+                * System.out.println(cpu_user);
+                * System.out.println(memory_idle);
+                * System.out.println(memory_max);
+                * System.out.println(memory_total);
+                * System.out.println(memory_used);
+                * System.out.println(diskAll);
+                * System.out.println(networkrx);
+                * System.out.println(networktx);
+                */
 
-			}
+            } catch (URISyntaxException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            } catch (ClientProtocolException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            } catch (IOException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
 
-		}
+         }
 
-	}
+      }
+
+   }
 
 }
