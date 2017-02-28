@@ -117,7 +117,7 @@ public class InstallThread extends Thread {
 	             * System.out.println(ip);
 	             */
 	            url = new URI(
-	                  "http://192.168.202.139:8181/observer/server/serverMain?testIp="
+	                  "http://192.168.202.140:8181/observer/server/serverMain?testIp="
 	                        + ip);
 	            HttpClient httpclient = new DefaultHttpClient();
 	            HttpPost httpPost = new HttpPost(url);

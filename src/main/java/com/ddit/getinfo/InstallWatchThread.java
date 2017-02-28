@@ -125,15 +125,15 @@ public class InstallWatchThread extends Thread {
 					 */
 					if (Double.parseDouble(cpu.total) > 80) {
 						url = new URI(
-								"http://192.168.202.199:8181/observer/server/serverMain?testIp="
+								"http://192.168.202.140:8181/observer/server/serverMain?testIp="
 										+ ip + "&alertcpu=true");
 					} else if (Double.parseDouble(memory.Used) > 80) {
 						url = new URI(
-								"http://192.168.202.199:8181/observer/server/serverMain?testIp="
+								"http://192.168.202.140:8181/observer/server/serverMain?testIp="
 										+ ip + "&alertmemory=true");
 					}else{
 						url = new URI(
-								"http://192.168.202.199:8181/observer/server/serverMain?testIp="
+								"http://192.168.202.140:8181/observer/server/serverMain?testIp="
 										+ ip);
 					}
 					HttpClient httpclient = new DefaultHttpClient();
@@ -185,14 +185,42 @@ public class InstallWatchThread extends Thread {
 
 					httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,
 							"utf-8"));
+					
+					if (Double.parseDouble(cpu.total) > 80) {
+						HttpResponse response = httpclient.execute(httpPost);
+						HttpEntity respEntity = response.getEntity();
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						if (respEntity != null) {
+							String content = EntityUtils.toString(respEntity);
+							// System.out.println(content);
+						}
+					} else if (Double.parseDouble(memory.Used) > 80) {
+						HttpResponse response = httpclient.execute(httpPost);
+						HttpEntity respEntity = response.getEntity();
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						if (respEntity != null) {
+							String content = EntityUtils.toString(respEntity);
+							// System.out.println(content);
+						}
+					}else{
+						HttpResponse response = httpclient.execute(httpPost);
+						HttpEntity respEntity = response.getEntity();
 
-					HttpResponse response = httpclient.execute(httpPost);
-					HttpEntity respEntity = response.getEntity();
+						if (respEntity != null) {
+							String content = EntityUtils.toString(respEntity);
+							// System.out.println(content);
+						}
 
-					if (respEntity != null) {
-						String content = EntityUtils.toString(respEntity);
-						// System.out.println(content);
 					}
+
 
 					/*
 					 * System.out.println(ip); System.out.println(hostname);
