@@ -115,7 +115,7 @@ public class InstallWatchThread extends Thread {
          memory_total = memory.RAM;
 
          if (Double.parseDouble(cpu.total) > 80
-               || Double.parseDouble(memory.Used) > 80) {
+               || Double.parseDouble(memory.RAM) > 50) {
             URI url;
             try {
                /*
@@ -125,15 +125,15 @@ public class InstallWatchThread extends Thread {
                 */
                if (Double.parseDouble(cpu.total) > 80) {
                   url = new URI(
-                        "http://192.168.202.199:8181/observer/server/serverMain?testIp="
+                        "http://192.168.202.143:8181/observer/server/serverMain?testIp="
                               + ip + "&alertcpu=true");
-               } else if (Double.parseDouble(memory.Used) > 80) {
+               } else if (Double.parseDouble(memory.RAM) > 50) {
                   url = new URI(
-                        "http://192.168.202.199:8181/observer/server/serverMain?testIp="
+                        "http://192.168.202.143:8181/observer/server/serverMain?testIp="
                               + ip + "&alertmemory=true");
                }else{
                   url = new URI(
-                        "http://192.168.202.199:8181/observer/server/serverMain?testIp="
+                        "http://192.168.202.143:8181/observer/server/serverMain?testIp="
                               + ip);
                }
                HttpClient httpclient = new DefaultHttpClient();
@@ -170,7 +170,7 @@ public class InstallWatchThread extends Thread {
                nameValuePairs.add(new BasicNameValuePair("memory_idle",
                      memory_idle));
                nameValuePairs.add(new BasicNameValuePair(
-                     "memory_total_used", memory_idle));
+                     "memory_total_used", memory_total));
 
                nameValuePairs.add(new BasicNameValuePair("networkcard",
                      networkcard));
@@ -198,7 +198,7 @@ public class InstallWatchThread extends Thread {
                      String content = EntityUtils.toString(respEntity);
                      // System.out.println(content);
                   }
-               } else if (Double.parseDouble(memory.Used) > 80) {
+               } else if (Double.parseDouble(memory.RAM) > 50) {
                   HttpResponse response = httpclient.execute(httpPost);
                   HttpEntity respEntity = response.getEntity();
                   try {
